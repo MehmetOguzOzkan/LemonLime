@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.35013.160
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "LemonLime", "LemonLime.csproj", "{BBA97A0E-DAD0-4B56-8459-686E86718450}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BBA97A0E-DAD0-4B56-8459-686E86718450}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BBA97A0E-DAD0-4B56-8459-686E86718450}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BBA97A0E-DAD0-4B56-8459-686E86718450}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BBA97A0E-DAD0-4B56-8459-686E86718450}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {3F8D9867-2F60-4025-9F90-17E26C0367D9}
+	EndGlobalSection
+EndGlobal
