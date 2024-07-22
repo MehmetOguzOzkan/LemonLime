@@ -3,6 +3,9 @@
 @{
     ViewData["Title"] = "Register";
     Layout = "";
+    Random random = new Random();
+    int imageNum = random.Next(1, 5);
+    string image = $"/img/auth/{imageNum}.jpg";
 }
 
 <!DOCTYPE html>
@@ -14,49 +17,146 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .register-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            max-width: 90%;
+            margin: 5% auto;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
             background-color: #f9f9f9;
+            min-height: 75vh;
+        }
+        .register-image {
+            width: 65%;
+            background: url(@image) no-repeat center center;
+            background-size: cover;
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
+        .register-form {
+            width: 35%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .register-form h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .form-control {
+            border-radius: 1rem;
+        }
+        .register-btn {
+            border-radius: 1rem;
+            width: 50%;
+            background-image: linear-gradient(to right, #f16cb3, #7865fc);
+            color: white;
+            font-weight: bold;
+            margin-top: 3rem;
+            margin-bottom: 1rem;
         }
 
-            .register-container h2 {
-                text-align: center;
-                margin-bottom: 20px;
+        .btn:hover {
+            filter: brightness(90%);
+        }
+
+        .centered-button{
+            text-align: center;
+        }
+
+        .register-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+            .register-link a {
+                color: #000000;
+                text-decoration: none;
             }
+
+                .register-link a:hover {
+                    color: #000000;
+                    text-decoration: underline;
+                }
+
+        @@media (max-width: 768px) {
+            .register-container {
+                flex-direction: column;
+                max-width: 90%;
+            }
+            .register-image, .register-form {
+                width: 100%;
+                border-radius: 0.5rem 0.5rem 0 0;
+            }
+
+            .register-image {
+                min-height: 15rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="register-container">
-        <h2>Register</h2>
-        <form asp-action="Register" method="post" enctype="multipart/form-data">
-            <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
+        <div class="register-image"></div>
+        <div class="register-form">
+            <h2><img src="~/img/auth/JoinUs.png" alt="Join Us" class="img-fluid mr-2" style="max-width: 60%;"></h2>
+            <br />
+            <form asp-action="Register" method="post" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label asp-for="Username" class="control-label"></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Email" class="control-label"></label>
+                    <input asp-for="Email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ConfirmPassword" class="control-label"></label>
+                    <input asp-for="ConfirmPassword" class="form-control" type="password" />
+                    <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="ProfilePicture" class="control-label"></label>
+                    <div class="input-group">
+                        <div class="custom-file">
+                            <input asp-for="ProfilePicture" class="custom-file-input" id="inputGroupFile" type="file">
+                            <label class="custom-file-label" for="inputGroupFile">Choose file</label>
+                            <button class="btn btn-outline-secondary" type="button" id="uploadButton">Upload</button>
+                        </div>
+                    </div>
+                    <span asp-validation-for="ProfilePicture" class="text-danger"></span>
+                </div>
+                <div class="centered-button">
+                    <button type="submit" class="btn btn-primary register-btn">Sign Up</button>
+                </div>
+            </form>
+            <div class="register-link">
+                <a asp-action="Login">Already have an account? Login here.</a>
             </div>
-            <div class="form-group">
-                <label asp-for="Email" class="control-label"></label>
-                <input asp-for="Email" class="form-control" />
-                <span asp-validation-for="Email" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <label asp-for="ProfilePicture" class="control-label"></label>
-                <input asp-for="ProfilePicture" class="form-control-file" type="file" />
-                <span asp-validation-for="ProfilePicture" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Register</button>
-        </form>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script>
+        document.getElementById("inputGroupFile").addEventListener("change", function (e) {
+            var fileName = document.getElementById("inputGroupFile").files[0].name;
+            var nextSibling = e.target.nextElementSibling;
+            nextSibling.innerText = fileName;
+        });
+
+        document.getElementById("uploadButton").addEventListener("click", function () {
+            var fileName = document.getElementById("inputGroupFile").files[0].name;
+            alert("File '" + fileName + "' uploaded successfully.");
+        });
+    </script>
 </body>
 </html>

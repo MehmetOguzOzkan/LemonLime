@@ -24,7 +24,7 @@ namespace LemonLime.Controllers
             _mapper = mapper;
         }
 
-        [HttpGet("{id:guid}")]
+        /*[HttpGet("{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
             var user = await _context.Users.Include(u => u.Role)
@@ -34,6 +34,22 @@ namespace LemonLime.Controllers
                 return NotFound();
 
             return View(_mapper.Map<UserResponse>(user));
+        }*/
+
+        [HttpGet("profile/{id:guid}")]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Recipes)
+                .FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
+
+            if (user == null)
+                return NotFound();
+
+            var userProfileResponse = _mapper.Map<UserProfileResponse>(user);
+            userProfileResponse.RecipeCount = user.Recipes.Count;
+
+            return View("Profile",userProfileResponse);
         }
 
         [HttpGet("edit/{id:guid}")]

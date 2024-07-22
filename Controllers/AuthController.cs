@@ -24,6 +24,32 @@ namespace LemonLime.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet("login")]
+        public IActionResult Login()
+        {
+            return View();
+        }
+
+        [HttpPost("login")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        {
+            if (!ModelState.IsValid)
+                return View(loginRequest);
+
+            var user = await _context.Users
+                .SingleOrDefaultAsync(u => u.Username == loginRequest.Username);
+
+            if (user == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
+            {
+                ModelState.AddModelError("", "Invalid username or password.");
+                return View(loginRequest);
+            }
+
+            await SignInUser(user);
+            return RedirectToAction("Index", "Home");
+        }
+
         [HttpGet("register")]
         public IActionResult Register()
         {
@@ -54,32 +80,14 @@ namespace LemonLime.Controllers
             _context.Users.Add(user);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Index", "Home");
+            return RedirectToAction("Login", "Auth");
         }
 
-        [HttpGet("login")]
-        public IActionResult Login()
-        {
-            return View();
-        }
-
-        [HttpPost("login")]
+        [HttpPost("logout")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Login(LoginRequest loginRequest)
+        public async Task<IActionResult> Logout()
         {
-            if (!ModelState.IsValid)
-                return View(loginRequest);
-
-            var user = await _context.Users
-                .SingleOrDefaultAsync(u => u.Username == loginRequest.Username);
-
-            if (user == null || !BCrypt.Net.BCrypt.Verify(loginRequest.Password, user.PasswordHash))
-            {
-                ModelState.AddModelError("", "Invalid username or password.");
-                return View(loginRequest);
-            }
-
-            await SignInUser(user);
+            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
             return RedirectToAction("Index", "Home");
         }
 
@@ -111,7 +119,8 @@ namespace LemonLime.Controllers
             {
                 new Claim(ClaimTypes.Name, user.Username),
                 new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
-                new Claim(ClaimTypes.Role, role.Name)
+                new Claim(ClaimTypes.Role, role.Name),
+                new Claim("ProfilePicture", user.ProfilePicture)
             };
 
             var claimsIdentity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);

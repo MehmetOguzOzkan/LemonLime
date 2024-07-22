@@ -1,0 +1,101 @@
+﻿@{
+    ViewData["Title"] = "User Recipes";
+}
+@model IEnumerable<LemonLime.DTOs.Recipe.RecipeHomeResponse>
+
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-12">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-book text-primary me-2" style="font-size: 2rem;"></i>
+                <h2 class="mb-0">Collection</h2>
+            </div>
+            <div class="row">
+                @if (Model.Any())
+                {
+                    @foreach (var recipe in Model)
+                    {
+                        <div class="col-md-3 mb-3 d-flex">
+                            <a asp-action="Details" asp-controller="Recipes" asp-route-id="@recipe.Id" class="card flex-fill text-decoration-none">
+                                <div class="card">
+                                    <img src="~/@recipe.ImageUrl" class="card-img-top img-fluid" alt="@recipe.Title" style="height: 15rem; object-fit: cover;">
+                                    <div class="card-body">
+                                        <h5 class="card-title text-center">@recipe.Title</h5>
+                                        <div class="rating text-center">
+                                            @for (int i = 0; i < 5; i++)
+                                            {
+                                                <i class="bi bi-star@(i < recipe.AverageRating ? "-fill" : "")"></i>
+                                            }
+                                            <span class="rating-text">@recipe.AverageRating</span>
+                                        </div>
+                                        <p class="card-text text-center">(@recipe.CommentCount Comments)</p>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <div class="col-md-12 text-center">
+                        <p>No recipes found.</p>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-img-top {
+        object-fit: cover;
+    }
+
+    .card-img-top {
+        height: 15rem;
+    }
+
+    .rating {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+        .rating i {
+            color: #ddd;
+            font-size: 1.5rem;
+        }
+
+            .rating i.bi-star-fill {
+                color: #ffd700;
+            }
+
+    .rating-text {
+        margin-left: 0.5rem;
+        font-size: 1rem;
+        color: darkblue;
+    }
+
+    .card a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .card-title, .card-text {
+        color: #000;
+    }
+
+    .card a:hover {
+        text-decoration: none;
+        color: #007bff;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">

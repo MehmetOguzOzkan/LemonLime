@@ -1,8 +1,188 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
+@model LemonLime.DTOs.HomeViewModel
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<div class="container">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            <div class="d-flex align-items-center mb-2">
+                <i class="bi bi-trophy-fill text-warning me-2" style="font-size: 2rem;"></i>
+                <h2 class="mb-0">Popular Recipes</h2>
+            </div>
+            <div class="row">
+                @foreach (var recipe in Model.MostLikedRecipes)
+                {
+                    <div class="col-md-3 mb-3 d-flex">
+                        <a asp-action="Details" asp-controller="Recipes" asp-route-id="@recipe.Id" class="card flex-fill text-decoration-none">
+                            <div class="card">
+                                <img src="@recipe.ImageUrl" class="card-img-top img-fluid" alt="@recipe.Title" style="height: 15rem; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">@recipe.Title</h5>
+                                    <div class="rating text-center">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            <i class="bi bi-star@(i < recipe.AverageRating ? "-fill" : "")"></i>
+                                        }
+                                        <span class="rating-text">@recipe.AverageRating</span>
+                                    </div>
+                                    <p class="card-text text-center">(@recipe.CommentCount Comments)</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="d-flex align-items-center mb-3">
+                <i class="bi bi-vector-pen text-warning me-2" style="font-size: 2rem;"></i>
+                <h2 class="mb-0">Popular Authors</h2>
+            </div>
+            <div class="row d-flex flex-wrap">
+                @foreach (var user in Model.MostLikedUsers)
+                {
+                    <div class="col-md-6 mb-3 d-flex">
+                        <a asp-action="GetRecipesByUserId" asp-controller="Recipes" asp-route-userId="@user.Id" class="card flex-fill text-decoration-none">
+                            <div class="card author-card">
+                                <img src="@user.ProfilePicture" class="card-img-top rounded-circle img-fluid" alt="@user.Username" style="height: 8rem; width: 8rem; object-fit: cover; border: 2px solid #ddd; margin: 1rem auto;">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">@user.Username</h5>
+                                    <div class="rating text-center">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            <i class="bi bi-star@(i < user.AverageRating ? "-fill" : "")"></i>
+                                        }
+                                        <span class="rating-text">@user.AverageRating</span>
+                                    </div>
+                                    <p class="card-text">(@user.RecipeCount Recipes)</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-10">
+            <h2>Recently Published</h2>
+            <div class="row">
+                @foreach (var recipe in Model.RecentRecipes)
+                {
+                    <div class="col-md-3 mb-3 d-flex">
+                        <a asp-action="Details" asp-controller="Recipes" asp-route-id="@recipe.Id" class="card flex-fill text-decoration-none">
+                            <div class="card">
+                                <img src="@recipe.ImageUrl" class="card-img-top img-fluid" alt="@recipe.Title" style="height: 12rem; object-fit: cover;">
+                                <div class="card-body">
+                                    <h5 class="card-title text-center">@recipe.Title</h5>
+                                    <div class="rating text-center">
+                                        @for (int i = 0; i < 5; i++)
+                                        {
+                                            <i class="bi bi-star@(i < recipe.AverageRating ? "-fill" : "")"></i>
+                                        }
+                                        <span class="rating-text">@recipe.AverageRating</span>
+                                    </div>
+                                    <p class="card-text text-center">(@recipe.CommentCount Comments)</p>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        </div>
+        <div class="col-md-2">
+            <h2>Collections</h2>
+            <ul class="list-group">
+                @foreach (var tag in Model.TagsWithCounts)
+                {
+                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                        <a asp-action="Details" asp-controller="Tags" asp-route-id="@tag.Id" class="text-decoration-none">
+                            @tag.Name
+                        </a>
+                        <span class="badge bg-warning rounded-pill">@tag.RecipeCount</span>
+                    </li>
+                }
+            </ul>
+        </div>
+    </div>
 </div>
+
+<style>
+    .card {
+        display: flex;
+        flex-direction: column;
+        height: 100%;
+    }
+
+    .card-img-top {
+        object-fit: cover;
+    }
+
+    .card-img-top {
+        height: 15rem;
+    }
+
+    .author-card {
+        height: 100%;
+    }
+
+    .card-img-top.small-img {
+        height: 12rem;
+    }
+
+    .card-img-top.rounded-circle {
+        border-radius: 50%;
+        border: 2px solid #ddd;
+    }
+
+    @@media (max-width: 767.98px) {
+        .card-img-top {
+            height: 10rem;
+        }
+    }
+
+    .rating {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        margin-bottom: 0.5rem;
+    }
+
+    .rating i {
+        color: #ddd;
+        font-size: 1.5rem;
+    }
+
+    .rating i.bi-star-fill {
+        color: #ffd700;
+    }
+
+    .rating-text {
+        margin-left: 0.5rem;
+        font-size: 1rem;
+        color: darkblue;
+    }
+
+    .card a {
+        text-decoration: none;
+        color: inherit;
+    }
+
+    .card-title, .card-text {
+        color: #000;
+    }
+
+    .list-group-item a {
+        color: #000;
+        text-decoration: none;
+    }
+
+    .card a:hover, .list-group-item a:hover {
+        text-decoration: underline;
+        color: #007bff;
+    }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-icons/1.10.3/font/bootstrap-icons.min.css">

@@ -1,0 +1,210 @@
+﻿@model RecipeResponse
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Slider Section -->
+        <div class="col-12">
+            @if (Model.Images.Count > 1)
+            {
+                <div id="recipeImagesCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < Model.Images.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="~/@Model.Images[i].Url" class="d-block w-100 recipe-image" alt="@Model.Title" />
+                            </div>
+                        }
+                    </div>
+                    <a class="carousel-control-prev" href="#recipeImagesCarousel" role="button" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#recipeImagesCarousel" role="button" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </a>
+                </div>
+            }
+            else if (Model.Images.Count == 1)
+            {
+                <img src="~/@Model.Images.First().Url" class="img-fluid recipe-image" alt="@Model.Title" />
+            }
+
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Recipe Details Section -->
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>@Model.Title</h1>
+                <div>
+                    <span class="badge badge-success"><i class="fas fa-clock"></i> @Model.CookingTimeInMinutes mins</span>
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="badge badge-warning">@tag.Name</span>
+                    }
+                </div>
+            </div>
+            <p>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <i class="fas fa-star @(i <= Model.AverageRating ? "text-warning" : "text-muted")"></i>
+                }
+                (@Model.AverageRating)
+                <span class="ms-3 ml-3 text-muted">Published on @Model.CreatedTime.ToString("dd/MM/yyyy")</span>
+            </p>
+            <hr />
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="mt-2" style="font-size:1.2rem">@Model.Description</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Ingredients))
+            {
+                <h2 class="mt-2">Ingredients</h2>
+                var ingredients = Model.Ingredients.Split('\n').Select(i => i.Trim()).ToList();
+                foreach (var ingredient in ingredients)
+                {
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="fas fa-check-square me-3 text-success"></i>
+                        <span>@ingredient.Trim().First().ToString().ToUpper()@ingredient.Trim().Substring(1).ToLower()</span>
+                    </div>
+                }
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Instructions))
+            {
+                <h2 class="mt-4">Instructions</h2>
+                var instructions = Model.Instructions.Split('\n').Select(i => i.Trim()).Where(i => !string.IsNullOrWhiteSpace(i)).ToList();
+                foreach (var step in instructions)
+                {
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="fas fa-utensils me-3 text-warning"></i>
+                        <span>@step.Trim().First().ToString().ToUpper()@step.Trim().Substring(1).ToLower()</span>
+                    </div>
+                }
+            }
+
+            <h3 class="mt-5">Comments (@Model.Comments.Count)</h3>
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="card mb-2">
+                    <div class="card-body position-relative">
+                        <h5 class="card-title">@comment.User.Username</h5>
+                        <p class="card-text">@comment.Content</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="@Model.CreatedByUser.ProfilePicture" class="rounded-circle mb-3 user-profile-img" alt="@Model.CreatedByUser.Username">
+                    <h5 class="card-title">@Model.CreatedByUser.Username</h5>
+                    <p>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="fas fa-star @(i <= Model.CreatedByUser.AverageRating ? "text-warning" : "text-muted")"></i>
+                        }
+                        (@Model.CreatedByUser.AverageRating)
+                    </p>
+                    <p class="card-text"><strong>@Model.CreatedByUser.RecipeCount</strong> Recipes</p>
+                </div>
+            </div>
+
+            <!-- Nutrition Info Card -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Nutrition Info</h5>
+                    <div class="d-flex flex-wrap">
+                        <span class="badge badge-primary me-2 mt-1 mb-1">Calories: @Model.NutritionInfo.Calories cal</span>
+                        <span class="badge badge-success me-2 mt-1 mb-1">Fat: @Model.NutritionInfo.Fat g</span>
+                        <span class="badge badge-danger me-2 mt-1 mb-1">Carbohydrates: @Model.NutritionInfo.Carbohydrates g</span>
+                        <span class="badge badge-warning mt-1 mb-1">Protein: @Model.NutritionInfo.Protein g</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGaAzGJwK4e0hZs5IB9aFQg6zg" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-pjaaA8dDz/8aT8yZxWXkDyyzXWSqlbK44z1E6iCmg4V5RgDFVrtI8ABBVSRTmPa8" crossorigin="anonymous"></script>
+
+}
+
+<style>
+    .recipe-image {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+    }
+
+    .user-profile-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .badge-warning {
+        color: #212529;
+        background-color: #ffc107;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .position-relative {
+        position: relative;
+    }
+
+    .position-absolute {
+        position: absolute;
+    }
+
+    .top-0 {
+        top: 0;
+    }
+
+    .end-0 {
+        right: 0;
+    }
+
+    .mt-2 {
+        margin-top: 0.5rem;
+    }
+
+    .me-2 {
+        margin-right: 0.5rem;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+
+    .text-primary {
+        color: #007bff;
+    }
+</style>

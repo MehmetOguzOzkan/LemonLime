@@ -8,7 +8,6 @@ using Microsoft.EntityFrameworkCore;
 using LemonLime.Context;
 using LemonLime.Models;
 using AutoMapper;
-using LemonLime.Handlers;
 using LemonLime.DTOs.Role;
 
 namespace LemonLime.Controllers
