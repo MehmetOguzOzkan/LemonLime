@@ -3,7 +3,9 @@
 @{
     ViewData["Title"] = "Login";
     Layout = "";
-
+    Random random = new Random();
+    int imageNum = random.Next(1, 5);
+    string image = $"/img/auth/{imageNum}.jpg";
 }
 
 <!DOCTYPE html>
@@ -15,36 +17,109 @@
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .login-container {
-            max-width: 400px;
-            margin: 50px auto;
-            padding: 20px;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            max-width: 90%;
+            margin: 5% auto;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: nowrap;
+            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+            border-radius: 0.5rem;
             background-color: #f9f9f9;
+            min-height: 75vh;
+        }
+        .login-image {
+            width: 65%;
+            background: url(@image) no-repeat center center;
+            background-size: cover;
+            border-radius: 0.5rem 0 0 0.5rem;
+        }
+        .login-form {
+            width: 35%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+        .login-form h2 {
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .form-control {
+            border-radius: 1rem;
+        }
+        .btn {
+            border-radius: 1rem;
+            width: 50%;
+            background-image: linear-gradient(to right, #ffa22e, #f71e3d);
+            color: white;
+            font-weight: bold;
+            margin-top: 1.5rem;
+            margin-bottom: 2.5rem;
+        }
+        .btn:hover {
+            filter: brightness(90%);
         }
 
-            .login-container h2 {
-                text-align: center;
-                margin-bottom: 20px;
+        .centered-button {
+            text-align: center;
+        }
+
+        .login-link {
+            text-align: center;
+            margin-top: 1rem;
+        }
+
+        .login-link a {
+            color: #000000;
+            text-decoration: none;
+        }
+
+        .login-link a:hover {
+             color: #000000;
+             text-decoration: underline;
+        }
+
+        @@media (max-width: 768px) {
+            .login-container {
+                flex-direction: column;
+                max-width: 90%;
             }
+            .login-image, .login-form {
+                width: 100%;
+                border-radius: 0.5rem 0.5rem 0 0;
+            }
+
+            .login-image {
+                min-height: 15rem;
+            }
+        }
     </style>
 </head>
 <body>
     <div class="login-container">
-        <h2>Login</h2>
-        <form asp-action="Login" method="post">
-            <div class="form-group">
-                <label asp-for="Username" class="control-label"></label>
-                <input asp-for="Username" class="form-control" />
-                <span asp-validation-for="Username" class="text-danger"></span>
+        <div class="login-image"></div>
+        <div class="login-form">
+            <h2><img src="~/img/auth/Welcome.png" alt="Login" class="img-fluid mr-2" style="max-width: 65%;"></h2>
+            <br />
+            <form asp-action="Login" method="post">
+                <div class="form-group">
+                    <label asp-for="Username" class="control-label"></label>
+                    <input asp-for="Username" class="form-control" />
+                    <span asp-validation-for="Username" class="text-danger"></span>
+                </div>
+                <div class="form-group">
+                    <label asp-for="Password" class="control-label"></label>
+                    <input asp-for="Password" class="form-control" type="password" />
+                    <span asp-validation-for="Password" class="text-danger"></span>
+                </div>
+                <div class="centered-button">
+                    <button type="submit" class="btn btn-primary">Login</button>
+                </div>
+            </form>
+            <div class="login-link">
+                <a asp-action="Register">Don't have an account? Sign up here.</a>
             </div>
-            <div class="form-group">
-                <label asp-for="Password" class="control-label"></label>
-                <input asp-for="Password" class="form-control" type="password" />
-                <span asp-validation-for="Password" class="text-danger"></span>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-        </form>
+        </div>
     </div>
     <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/2.5.4/umd/popper.min.js"></script>

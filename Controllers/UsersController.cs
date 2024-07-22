@@ -24,16 +24,46 @@ namespace LemonLime.Controllers
             _mapper = mapper;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> Index()
+        {
+            var users = await _context.Users
+                .Where(u => u.IsActive)
+                .Include(u => u.Role)
+                .ToListAsync();
+
+            var userResponses = _mapper.Map<List<UserDetailsResponse>>(users);
+            return View(userResponses);
+        }
+
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
-            var user = await _context.Users.Include(u => u.Role)
+            var user = await _context.Users
+                .Include(u => u.Role)
                 .FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
 
             if (user == null)
                 return NotFound();
 
-            return View(_mapper.Map<UserResponse>(user));
+            var userDetailsResponse = _mapper.Map<UserDetailsResponse>(user);
+            return View(userDetailsResponse);
+        }
+
+        [HttpGet("profile/{id:guid}")]
+        public async Task<IActionResult> GetUserById(Guid id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Recipes)
+                .FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
+
+            if (user == null)
+                return NotFound();
+
+            var userProfileResponse = _mapper.Map<UserProfileResponse>(user);
+            userProfileResponse.RecipeCount = user.Recipes.Count;
+
+            return View("Profile",userProfileResponse);
         }
 
         [HttpGet("edit/{id:guid}")]
@@ -68,6 +98,66 @@ namespace LemonLime.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index", "Home");
+        }
+
+        [HttpGet("delete/{id:guid}")]
+        public async Task<IActionResult> Delete(Guid id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Recipes.Where(r=>r.IsActive))
+                .FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
+
+            if (user == null)
+                return NotFound();
+
+            if (user.Recipes.Any())
+            {
+                TempData["ErrorMessage"] = "This user has recipes. Cannot delete user.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            return View(_mapper.Map<UserDetailsResponse>(user));
+        }
+
+        [HttpPost("delete/{id:guid}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(Guid id)
+        {
+            var user = await _context.Users
+                .Include(u => u.Role)
+                .Include(u => u.Recipes.Where(r => r.IsActive))
+                .FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
+
+            if (user == null)
+                return NotFound();
+
+            if (user.Recipes.Any())
+            {
+                TempData["ErrorMessage"] = "This user has recipes. Cannot delete user.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            user.IsActive = false;
+            user.UpdatedTime = DateTime.UtcNow;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                if (!_context.Users.Any(u => u.Id == id))
+                {
+                    return NotFound();
+                }
+                else
+                {
+                    throw;
+                }
+            }
+
+            return RedirectToAction(nameof(Index));
         }
 
         private async Task<string> SaveProfilePicture(IFormFile profilePicture)

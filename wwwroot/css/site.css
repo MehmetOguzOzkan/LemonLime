@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Josefin+Sans:ital,wght@0,100..700;1,100..700&display=swap');
+
 html {
   font-size: 14px;
 }
@@ -19,7 +21,10 @@ html {
 
 body {
   margin-bottom: 60px;
-    background-color: #f7f7f7;
+  background-color: #f7f7f7;
+  font-family: "Josefin Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
 }
 
 footer {

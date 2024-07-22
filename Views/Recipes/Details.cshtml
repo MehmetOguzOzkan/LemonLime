@@ -1,0 +1,315 @@
+﻿@model RecipeResponse
+
+@{
+    ViewData["Title"] = "Details";
+    var isCurrentUserOwner = User.Identity.IsAuthenticated && Model.CreatedByUser.Username == User.Identity.Name;
+    var isAdmin = User.IsInRole("Admin");
+}
+
+@functions {
+    public string FormatRating(double rating)
+    {
+        if (rating % 1 == 0)
+        {
+            return rating.ToString("0");
+        }
+        else if ((rating * 10) % 1 == 0)
+        {
+            return rating.ToString("0.0");
+        }
+        else
+        {
+            return rating.ToString("0.00");
+        }
+    }
+}
+
+<div class="container mt-4">
+    <div class="row">
+        <!-- Slider Section -->
+        <div class="col-12">
+            @if (Model.Images.Count > 1)
+            {
+                <div id="recipeImagesCarousel" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        @for (int i = 0; i < Model.Images.Count; i++)
+                        {
+                            <div class="carousel-item @(i == 0 ? "active" : "")">
+                                <img src="~/@Model.Images[i].Url" class="d-block w-100 recipe-image" alt="@Model.Title" />
+                            </div>
+                        }
+                    </div>
+                    <a class="carousel-control-prev" href="#recipeImagesCarousel" role="button" data-bs-slide="prev">
+                        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Previous</span>
+                    </a>
+                    <a class="carousel-control-next" href="#recipeImagesCarousel" role="button" data-bs-slide="next">
+                        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                        <span class="visually-hidden">Next</span>
+                    </a>
+                </div>
+            }
+            else if (Model.Images.Count == 1)
+            {
+                <img src="~/@Model.Images.First().Url" class="img-fluid recipe-image" alt="@Model.Title" />
+            }
+        </div>
+    </div>
+
+    <div class="row mt-4">
+        <!-- Recipe Details Section -->
+        <div class="col-md-8">
+            <div class="d-flex justify-content-between align-items-center">
+                <h1>@Model.Title</h1>
+                <div>
+                    <span class="badge badge-success"><i class="fas fa-clock"></i> @Model.CookingTimeInMinutes mins</span>
+                    @foreach (var tag in Model.Tags)
+                    {
+                        <span class="badge badge-warning">@tag.Name</span>
+                    }
+                </div>
+            </div>
+            <p>
+                @for (int i = 1; i <= 5; i++)
+                {
+                    <i class="fas fa-star @(i <= Model.AverageRating ? "text-warning" : "text-muted")"></i>
+                }
+                (@FormatRating(Model.AverageRating))
+                <span class="ms-3 ml-3 text-muted">Published on @Model.CreatedTime.ToString("dd/MM/yyyy")</span>
+            </p>
+            <hr />
+            @if (!string.IsNullOrWhiteSpace(Model.Description))
+            {
+                <p class="mt-2" style="font-size:1.2rem">@Model.Description</p>
+            }
+            @if (!string.IsNullOrWhiteSpace(Model.Ingredients))
+            {
+                <h2 class="mt-2">Ingredients</h2>
+                var ingredients = Model.Ingredients.Split('\n').Select(i => i.Trim()).ToList();
+                foreach (var ingredient in ingredients)
+                {
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="fas fa-check-square me-3 text-success"></i>
+                        <span>@ingredient.Trim().First().ToString().ToUpper()@ingredient.Trim().Substring(1)</span>
+                    </div>
+                }
+            }
+
+            @if (!string.IsNullOrWhiteSpace(Model.Instructions))
+            {
+                <h2 class="mt-4">Instructions</h2>
+                var instructions = Model.Instructions.Split('\n').Select(i => i.Trim()).Where(i => !string.IsNullOrWhiteSpace(i)).ToList();
+                foreach (var step in instructions)
+                {
+                    <div class="d-flex align-items-center mt-2">
+                        <i class="fas fa-utensils me-3 text-warning"></i>
+                        <span>@step.Trim().First().ToString().ToUpper()@step.Trim().Substring(1)</span>
+                    </div>
+                }
+            }
+
+            <div class="d-flex justify-content-between align-items-center mt-5">
+                <h3>Comments (@Model.Comments.Count)</h3>
+                @if (User.Identity.IsAuthenticated)
+                {
+                    <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCommentModal">+ Add Comment</button>
+                }
+            </div>
+            <hr />
+            @foreach (var comment in Model.Comments)
+            {
+                <div class="card mb-3">
+                    <div class="card-body">
+                        <div class="d-flex align-items-start">
+                            <img src="@comment.User.ProfilePicture" alt="@comment.User.Username's profile picture" class="rounded-circle border" width="50" height="50" style="border-width: 2px;">
+                            <div class="ms-3 flex-grow-1">
+                                <h5 class="mb-2">@comment.User.Username</h5>
+                                <p class="mb-1">@comment.Content</p>
+                            </div>
+                            <div class="ms-auto text-muted">
+                                @comment.UpdatedTime.ToString("g")
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+
+        <div class="col-md-4">
+            <a asp-action="GetRecipesByUserId" asp-controller="Recipes" asp-route-userId="@Model.CreatedByUser.Id" class="card flex-fill text-decoration-none" style="color:black">
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="@Model.CreatedByUser.ProfilePicture" class="rounded-circle mb-3 user-profile-img" alt="@Model.CreatedByUser.Username">
+                        <h5 class="card-title">@Model.CreatedByUser.Username</h5>
+                        <p>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star @(i <= Model.CreatedByUser.AverageRating ? "text-warning" : "text-muted")"></i>
+                            }
+                            (@FormatRating(Model.CreatedByUser.AverageRating))
+                        </p>
+                        <p class="card-text"><strong>@Model.CreatedByUser.RecipeCount</strong> Recipes</p>
+                    </div>
+                </div>
+            </a>
+
+            <!-- Nutrition Info Card -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">Nutrition Info</h5>
+                    <div class="d-flex flex-wrap">
+                        <span class="badge badge-primary me-2 mt-1 mb-1">Calories: @Model.NutritionInfo.Calories cal</span>
+                        <span class="badge badge-success me-2 mt-1 mb-1">Fat: @Model.NutritionInfo.Fat g</span>
+                        <span class="badge badge-danger me-2 mt-1 mb-1">Carbohydrates: @Model.NutritionInfo.Carbohydrates g</span>
+                        <span class="badge badge-warning mt-1 mb-1">Protein: @Model.NutritionInfo.Protein g</span>
+                    </div>
+                </div>
+            </div>
+            @if (isCurrentUserOwner || isAdmin)
+            {
+                <div class="d-flex justify-content-end mt-4">
+                    <a asp-action="Edit" asp-controller="Recipes" asp-route-id="@Model.Id" class="btn btn-warning me-2">
+                        <i class="fas fa-edit"></i> Edit
+                    </a>
+                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-trash"></i> Delete</button>
+                </div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Add Comment Modal -->
+<div class="modal fade" id="addCommentModal" tabindex="-1" aria-labelledby="addCommentModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addCommentModalLabel">Add Comment</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form method="post" asp-controller="Comments" asp-action="AddComment" asp-route-recipeId="@Model.Id">
+                <div class="modal-body">
+                    <div class="mb-3">
+                        <label for="commentContent" class="form-label">Comment</label>
+                        <textarea class="form-control" id="commentContent" name="Content" rows="3" required></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label for="ratingValue" class="form-label">Rating</label>
+                        <select class="form-select" id="ratingValue" name="Rating" required style="color:gold">
+                            <option value="">Select Rating</option>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <option value="@i">
+                                    @for (int j = 1; j <= i; j++)
+                                    {
+                                        <span>&#9733;</span>
+                                    }
+                                </option>
+                            }
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                    <button type="submit" class="btn btn-primary">Submit</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="deleteRecipeModal" tabindex="-1" aria-labelledby="deleteRecipeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteRecipeModalLabel">Delete Recipe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to delete <strong class="badge badge-danger fs-6">@Model.Title</strong> ?
+            </div>
+            <div class="modal-footer">
+                <form method="post" asp-action="Delete" asp-controller="Recipes" asp-route-id="@Model.Id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+@section Scripts {
+    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGaAzGJwK4e0hZs5IB9aFQg6zg" crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-pjaaA8dDz/8aT8yZxWXkDyyzXWSqlbK44z1E6iCmg4V5RgDFVrtI8ABBVSRTmPa8" crossorigin="anonymous"></script>
+
+}
+
+<style>
+    .recipe-image {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+        object-fit: cover;
+    }
+
+    .user-profile-img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+    }
+
+    .badge-warning {
+        color: #212529;
+        background-color: #ffc107;
+    }
+
+    .badge-primary {
+        background-color: #007bff;
+    }
+
+    .badge-success {
+        background-color: #28a745;
+    }
+
+    .badge-danger {
+        background-color: #dc3545;
+    }
+
+    .badge-warning {
+        background-color: #ffc107;
+        color: black;
+    }
+
+    .position-relative {
+        position: relative;
+    }
+
+    .position-absolute {
+        position: absolute;
+    }
+
+    .top-0 {
+        top: 0;
+    }
+
+    .end-0 {
+        right: 0;
+    }
+
+    .mt-2 {
+        margin-top: 0.5rem;
+    }
+
+    .me-2 {
+        margin-right: 0.5rem;
+    }
+
+    .text-success {
+        color: #28a745;
+    }
+
+    .text-primary {
+        color: #007bff;
+    }
+</style>

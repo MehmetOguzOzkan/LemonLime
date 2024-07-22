@@ -1,66 +1,43 @@
-﻿@model LemonLime.Models.User
+﻿@model LemonLime.DTOs.User.UserDetailsResponse
 
 @{
-    ViewData["Title"] = "Details";
+    ViewData["Title"] = "User Details";
 }
 
-<h1>Details</h1>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2>User Details</h2>
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img src="@Model.ProfilePicture" alt="Profile Picture" class="rounded-circle img-fluid border border-3" style="width: 200px; height: 200px;">
+                        </div>
+                        <div class="col-md-8 mt-3">
+                            <p class="fs-5"><strong>Username:</strong> @Model.Username</p>
+                            <p class="fs-5"><strong>Email:</strong> @Model.Email</p>
+                            <p class="fs-5"><strong>Role:</strong> @Model.Role</p>
+                            <p class="fs-5"><strong>Created Time:</strong> @Model.CreatedTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                            <p class="fs-5"><strong>Updated Time:</strong> @Model.UpdatedTime.ToString("yyyy-MM-dd HH:mm:ss")</p>
+                            <div class="d-flex justify-content-end mt-3">
+                                <a class="btn btn-warning me-2" asp-action="GetRecipesByUserId" asp-controller="Recipes" asp-route-userId="@Model?.Id">
+                                    <i class="fas fa-utensils"></i> Recipes
+                                </a>
+                                <a class="btn btn-secondary" asp-action="Index">
+                                    <i class="fas fa-home"></i> Back to List
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>
 
-<div>
-    <h4>User</h4>
-    <hr />
-    <dl class="row">
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Username)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Username)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Email)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Email)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.PasswordHash)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.PasswordHash)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.ProfilePicture)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.ProfilePicture)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.Role)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.Role.Name)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.CreatedTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.CreatedTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.UpdatedTime)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.UpdatedTime)
-        </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.IsActive)
-        </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.IsActive)
-        </dd>
-    </dl>
-</div>
-<div>
-    <a asp-action="Edit" asp-route-id="@Model?.Id">Edit</a> |
-    <a asp-action="Index">Back to List</a>
-</div>
+@section Scripts {
+    <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+}

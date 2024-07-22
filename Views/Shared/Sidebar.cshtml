@@ -1,0 +1,70 @@
+﻿@* Views/Shared/Sidebar.cshtml *@
+
+@using Microsoft.AspNetCore.Mvc.Rendering
+@{
+    var iconSize = "1.5rem"; /* İkon boyutunu büyüttük */
+}
+
+<div class="sidebar col-md-3 col-lg-2 d-flex flex-column p-3 bg-light shadow">
+    <h3 class="fw-bold d-flex align-items-center">
+        <i class="fas fa-tools ms-4 me-2" style="font-size: @iconSize; color:chocolate;"></i>
+        Admin Panel
+    </h3>
+    <hr>
+    <ul class="nav nav-pills flex-column mb-auto">
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("List", "Recipes")" class="nav-link d-flex align-items-center link-dark">
+                <i class="fas fa-utensils me-2" style="font-size: @iconSize; color:#dede50;"></i>
+                <span class="fw-bold fs-5">Recipes</span>
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("Index", "Tags")" class="nav-link d-flex align-items-center link-dark">
+                <i class="fas fa-tag me-2" style="font-size: @iconSize; color:#b1c84d"></i>
+                <span class="fw-bold fs-5">Tags</span>
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("Index", "Users")" class="nav-link d-flex align-items-center link-dark">
+                <i class="fas fa-user me-2" style="font-size: @iconSize; color:#84b24b;"></i>
+                <span class="fw-bold fs-5">Users</span>
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("Index", "Roles")" class="nav-link d-flex align-items-center link-dark">
+                <i class="fas fa-id-card me-2" style="font-size: @iconSize; color:#569c49;"></i>
+                <span class="fw-bold fs-5">Roles</span>
+            </a>
+        </li>
+        <li class="nav-item mb-2">
+            <a href="@Url.Action("Index", "Home")" class="nav-link d-flex align-items-center link-dark">
+                <i class="fas fa-home me-2" style="font-size: @iconSize; color: tomato;"></i>
+                <span class="fw-bold fs-5">Home</span>
+            </a>
+        </li>
+    </ul>
+</div>
+
+<style>
+    .sidebar {
+        background-color: white;
+        border-right: 1px solid #ddd;
+        border-radius: 10% 0 10% 0;
+    }
+
+        .sidebar .nav-link {
+            border-radius: .375rem;
+            padding: 0.75rem 1.25rem;
+            transition: background-color 0.3s;
+        }
+
+            .sidebar .nav-link:hover {
+                background-color: #e9ecef;
+            }
+
+        .sidebar .nav-item {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+</style>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">

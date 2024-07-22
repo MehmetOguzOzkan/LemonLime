@@ -1,0 +1,146 @@
+﻿@using Newtonsoft.Json
+@model LemonLime.DTOs.Recipe.RecipeRequest
+
+@{
+    var tags = TempData["Tags"] != null ? JsonConvert.DeserializeObject<List<SelectListItem>>(TempData["Tags"].ToString()) : new List<SelectListItem>();
+    ViewData["Title"] = "Create Recipe";
+}
+
+<div class="container mt-4">
+    <h2 class="d-flex justify-content-between align-items-center">
+        Create Recipe
+        <a asp-action="Index" asp-controller="Home" class="btn btn-secondary d-flex align-items-center">
+            <i class="fas fa-arrow-left me-2"></i> Back to Home
+        </a>
+    </h2>
+    <hr />
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card border-1" style="padding: 5% 3%; border: dashed;">
+                <div class="card-body">
+                    <form asp-action="Create" method="post" enctype="multipart/form-data">
+                        <div class="form-group mb-4">
+                            <label asp-for="Title" class="form-label"></label>
+                            <input asp-for="Title" class="form-control" placeholder="Enter recipe title" />
+                            <span asp-validation-for="Title" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label asp-for="Description" class="form-label"></label>
+                            <textarea asp-for="Description" class="form-control" placeholder="Enter recipe description"></textarea>
+                            <span asp-validation-for="Description" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label asp-for="Ingredients" class="form-label"></label>
+                            <textarea asp-for="Ingredients" class="form-control" placeholder="Enter ingredients"></textarea>
+                            <span asp-validation-for="Ingredients" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label asp-for="Instructions" class="form-label"></label>
+                            <textarea asp-for="Instructions" class="form-control" placeholder="Enter instructions"></textarea>
+                            <span asp-validation-for="Instructions" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label asp-for="CookingTimeInMinutes" class="form-label"></label>
+                            <input asp-for="CookingTimeInMinutes" class="form-control" placeholder="Enter cooking time in minutes" />
+                            <span asp-validation-for="CookingTimeInMinutes" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-4">
+                            <div class="row">
+                                <div class="col-md-3">
+                                    <label asp-for="NutritionInfo.Calories" class="form-label"></label>
+                                    <input asp-for="NutritionInfo.Calories" class="form-control" placeholder="Calories" />
+                                    <span asp-validation-for="NutritionInfo.Calories" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="NutritionInfo.Fat" class="form-label"></label>
+                                    <input asp-for="NutritionInfo.Fat" class="form-control" placeholder="Fat (g)" />
+                                    <span asp-validation-for="NutritionInfo.Fat" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="NutritionInfo.Carbohydrates" class="form-label"></label>
+                                    <input asp-for="NutritionInfo.Carbohydrates" class="form-control" placeholder="Carbohydrates (g)" />
+                                    <span asp-validation-for="NutritionInfo.Carbohydrates" class="text-danger"></span>
+                                </div>
+                                <div class="col-md-3">
+                                    <label asp-for="NutritionInfo.Protein" class="form-label"></label>
+                                    <input asp-for="NutritionInfo.Protein" class="form-control" placeholder="Protein (g)" />
+                                    <span asp-validation-for="NutritionInfo.Protein" class="text-danger"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label asp-for="Images" class="form-label"></label>
+                            <input asp-for="Images" type="file" class="form-control" multiple />
+                            <span asp-validation-for="Images" class="text-danger"></span>
+                        </div>
+                        <div class="form-group mb-4">
+                            <label class="form-label">Tags</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" id="tagInput" placeholder="Select tags" readonly />
+                                <button class="btn btn-secondary" type="button" onclick="toggleTagList()">Choose Tags</button>
+                            </div>
+                            <div id="selectedTags" class="mb-3"></div>
+                            <div id="tagList" class="list-group" style="display: none;">
+                                @foreach (var tag in tags)
+                                {
+                                    <a href="#" class="list-group-item list-group-item-action" data-tag-id="@tag.Value">@tag.Text</a>
+                                }
+                            </div>
+                        </div>
+                        <input type="hidden" name="TagIds" id="tagIds" />
+                        <div class="form-group">
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-plus me-2"></i> Create
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script>
+        const selectedTags = [];
+
+        function toggleTagList() {
+            const tagList = document.getElementById("tagList");
+            tagList.style.display = tagList.style.display === "none" ? "block" : "none";
+        }
+
+        document.querySelectorAll("#tagList .list-group-item").forEach(item => {
+            item.addEventListener("click", function (e) {
+                e.preventDefault();
+                const tagId = this.getAttribute("data-tag-id");
+                const tagName = this.innerText.trim();
+
+                if (!selectedTags.includes(tagId)) {
+                    selectedTags.push(tagId);
+                    document.getElementById("selectedTags").innerHTML += `
+                            <span class="badge bg-success me-2" data-tag-id="${tagId}">
+                                ${tagName} <i class="fas fa-times ms-1" style="cursor:pointer;" onclick="removeTag('${tagId}', this)"></i>
+                            </span>`;
+                    this.style.display = "none";
+                    updateTagIds();
+                }
+            });
+        });
+
+        function removeTag(tagId, element) {
+            const index = selectedTags.indexOf(tagId);
+            if (index > -1) {
+                selectedTags.splice(index, 1);
+                element.parentElement.remove();
+                document.querySelector(`#tagList .list-group-item[data-tag-id="${tagId}"]`).style.display = "block";
+                updateTagIds();
+            }
+        }
+
+        function updateTagIds() {
+            const tagIdsInput = document.getElementById("tagIds");
+            tagIdsInput.value = selectedTags.join(",");
+        }
+    </script>
+}

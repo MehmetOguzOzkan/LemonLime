@@ -1,0 +1,37 @@
+﻿@model LemonLime.DTOs.User.UserProfileResponse
+
+@{
+    ViewData["Title"] = "Profile";
+}
+
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-2"></div>
+        <div class="col-md-8">
+            <h2>Profile</h2>
+            <div class="card shadow-lg">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-4 text-center">
+                            <img src="@Model.ProfilePicture" alt="Profile Picture" class="rounded-circle img-fluid border border-3" style="width: 200px; height: 200px;">
+                        </div>
+                        <div class="col-md-8 mt-3">
+                            <p class="fs-5"><strong>Username:</strong> @Model.Username</p>
+                            <p class="fs-5"><strong>Email:</strong> @Model.Email</p>
+                            <p class="fs-5"><strong>Recipes Count:</strong> @Model.RecipeCount</p>
+                            <div class="d-flex justify-content-end mt-3">
+                                <a class="btn btn-primary me-2" asp-action="Edit" asp-route-id="@Model?.Id">
+                                    <i class="fas fa-edit"></i> Edit
+                                </a>
+                                <a class="btn btn-secondary" asp-action="Index">
+                                    <i class="fas fa-home"></i> Back to Home
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2"></div>
+    </div>
+</div>

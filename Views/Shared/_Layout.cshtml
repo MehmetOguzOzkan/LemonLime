@@ -11,7 +11,7 @@
     <style>
         .navbar-custom {
             background-color: #f2f2f2;
-            padding: 0.5rem 25%;
+            padding: 0.5rem 21%;
         }
 
         .navbar-brand img {
@@ -21,7 +21,13 @@
         .nav-link {
             margin-right: 1rem;
             font-weight: 500;
+            font-size: large;
             color: #555;
+        }
+
+        nav-link-login {
+            margin-right: 1rem;
+            font-weight: 500;
         }
 
         .nav-link:hover {
@@ -35,30 +41,115 @@
         .navbar-collapse {
             justify-content: flex-end;
         }
+
+        .btn-login {
+            border-radius: 1rem;
+            background-image: linear-gradient(to right, #ffa22e, #f71e3d);
+            color: white;
+            font-weight: bold;
+            border: none;
+            margin: 0;
+        }
+
+        .btn-login:hover {
+            filter: brightness(90%);
+            color: white;
+        }
+
+        .btn-logout {
+            border-radius: 0 1rem 1rem 0;
+            background-image: linear-gradient(to right, #fa8072, #cd2626);
+            color: white;
+            font-weight: bold;
+            border: none;
+        }
+
+            .btn-logout:hover {
+                filter: brightness(90%);
+                color: white;
+            }
+
+        .dropdown-menu {
+            right: 0;
+            border-radius: 0.5rem;
+            box-shadow: 0 0 1rem rgba(0, 0, 0, 0.1);
+        }
+
+        .dropdown-menu a {
+            text-decoration: none;
+            color: black;
+        }
+
+        .dropdown-menu a:hover {
+            text-decoration: underline;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8f9fa;
+        }
+
+        .profile-picture{
+            width: 2rem;
+            height: 2rem;
+            object-fit: cover;
+        }
     </style>
 </head>
 <body>
     <header>
         <nav class="navbar navbar-expand-sm navbar-custom navbar-light border-bottom box-shadow mb-3">
             <div class="container-fluid">
-                <a class="navbar-brand" href="/">
+                <a class="navbar-brand" href="/Home">
                     <img src="~/img/logos/LemonLimeLogo.png" alt="LemonLime Logo">
-                    @{/*
-                      <img src="~/img/logos/LemonLimeLogoTp.png" alt="LemonLime Logo">
-                      <img src="~/img/logos/LemonLimeBrand.png" alt="LemonLime Brand">
-                    */}
                 </a>
                 <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
                     <span class="navbar-toggler-icon"></span>
                 </button>
                 <div class="collapse navbar-collapse" id="navbarNav">
                     <ul class="navbar-nav ms-auto">
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Home" asp-action="Index">Home</a>
+                        <li class="nav-item me-5 mt-1">
+                            <a class="nav-link fs-5" asp-controller="Recipes" asp-action="Index"><strong>RECIPES</strong></a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-area="" asp-controller="Roles" asp-action="Index">Roles</a>
-                        </li>
+                        @if (User.Identity.IsAuthenticated)
+                        {
+                            var profilePicture = User.FindFirst("ProfilePicture")?.Value;
+                            var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+                            <li class="nav-item dropdown">
+                                <a class="nav-link dropdown-toggle" href="#" id="profileDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                    @if (!string.IsNullOrEmpty(profilePicture))
+                                    {
+                                        <img src="@profilePicture" alt="Profile Picture" class="rounded-circle profile-picture fs-5">
+                                    }
+                                    else
+                                    {
+                                        <img src="~/img/profiles/default.png" alt="Profile Picture" class="rounded-circle profile-picture">
+                                    }
+                                </a>
+                                <ul class="dropdown-menu" aria-labelledby="profileDropdown">
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Users" asp-action="GetUserById" asp-route-id="@userId"><i class="fas fa-user me-1"></i> Profile</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Recipes" asp-action="GetRecipesByUserId" asp-route-userId="@userId"><i class="fas fa-book me-1"></i> My Recipes</a></li>
+                                    <li><a class="dropdown-item" asp-area="" asp-controller="Recipes" asp-action="Create"><i class="fas fa-plus me-1"></i> Add Recipes</a></li>
+                                    @if (User.IsInRole("Admin"))
+                                    {
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item" asp-area="Admin" asp-controller="Recipes" asp-action="List"><i class="fas fa-tools me-1"></i> Admin Panel</a></li>
+                                    }
+                                    <li><hr class="dropdown-divider"></li>
+                                    <li>
+                                        <form asp-controller="Auth" asp-action="Logout" method="post" class="d-inline">
+                                            <button type="submit" class="dropdown-item btn btn-logout"><i class="fas fa-sign-out-alt me-1"></i> Logout</button>
+                                        </form>
+                                    </li>
+                                </ul>
+                            </li>
+
+                        }
+                        else
+                        {
+                            <li class="nav-item mt-1">
+                                <a class="nav-link-login btn btn-login fs-5" asp-area="" asp-controller="Auth" asp-action="Login">Login</a>
+                            </li>
+                        }
                     </ul>
                 </div>
             </div>
