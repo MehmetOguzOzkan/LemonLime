@@ -53,6 +53,7 @@
             {
                 <img src="~/@Model.Images.First().Url" class="img-fluid recipe-image" alt="@Model.Title" />
             }
+
         </div>
     </div>
 
@@ -137,20 +138,20 @@
 
         <div class="col-md-4">
             <a asp-action="GetRecipesByUserId" asp-controller="Recipes" asp-route-userId="@Model.CreatedByUser.Id" class="card flex-fill text-decoration-none" style="color:black">
-                <div class="card mb-4">
-                    <div class="card-body text-center">
-                        <img src="@Model.CreatedByUser.ProfilePicture" class="rounded-circle mb-3 user-profile-img" alt="@Model.CreatedByUser.Username">
-                        <h5 class="card-title">@Model.CreatedByUser.Username</h5>
-                        <p>
-                            @for (int i = 1; i <= 5; i++)
-                            {
-                                <i class="fas fa-star @(i <= Model.CreatedByUser.AverageRating ? "text-warning" : "text-muted")"></i>
-                            }
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="@Model.CreatedByUser.ProfilePicture" class="rounded-circle mb-3 user-profile-img" alt="@Model.CreatedByUser.Username">
+                    <h5 class="card-title">@Model.CreatedByUser.Username</h5>
+                    <p>
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            <i class="fas fa-star @(i <= Model.CreatedByUser.AverageRating ? "text-warning" : "text-muted")"></i>
+                        }
                             (@FormatRating(Model.CreatedByUser.AverageRating))
-                        </p>
-                        <p class="card-text"><strong>@Model.CreatedByUser.RecipeCount</strong> Recipes</p>
-                    </div>
+                    </p>
+                    <p class="card-text"><strong>@Model.CreatedByUser.RecipeCount</strong> Recipes</p>
                 </div>
+            </div>
             </a>
 
             <!-- Nutrition Info Card -->
@@ -172,7 +173,7 @@
                         <i class="fas fa-edit"></i> Edit
                     </a>
                     <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-trash"></i> Delete</button>
-                </div>
+        </div>
             }
         </div>
     </div>
@@ -213,8 +214,8 @@
                     <button type="submit" class="btn btn-primary">Submit</button>
                 </div>
             </form>
-        </div>
     </div>
+</div>
 </div>
 
 <div class="modal fade" id="deleteRecipeModal" tabindex="-1" aria-labelledby="deleteRecipeModalLabel" aria-hidden="true">

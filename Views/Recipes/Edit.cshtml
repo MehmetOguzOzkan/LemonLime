@@ -11,7 +11,7 @@
             <i class="fas fa-arrow-left me-2"></i> Back to Home
         </a>
     </h2>
-    <hr />
+<hr />
     <div class="row justify-content-center">
         <div class="col-md-8">
             <div class="card border-1" style="padding: 5% 3%; border: dashed;">
@@ -21,28 +21,28 @@
                         <div class="form-group mb-4">
                             <label asp-for="Title" class="form-label"></label>
                             <input asp-for="Title" class="form-control" placeholder="Enter recipe title" />
-                            <span asp-validation-for="Title" class="text-danger"></span>
-                        </div>
+                <span asp-validation-for="Title" class="text-danger"></span>
+            </div>
                         <div class="form-group mb-4">
                             <label asp-for="Description" class="form-label"></label>
                             <textarea asp-for="Description" class="form-control" placeholder="Enter recipe description"></textarea>
-                            <span asp-validation-for="Description" class="text-danger"></span>
-                        </div>
+                <span asp-validation-for="Description" class="text-danger"></span>
+            </div>
                         <div class="form-group mb-4">
                             <label asp-for="Ingredients" class="form-label"></label>
                             <textarea asp-for="Ingredients" class="form-control" placeholder="Enter ingredients"></textarea>
-                            <span asp-validation-for="Ingredients" class="text-danger"></span>
-                        </div>
+                <span asp-validation-for="Ingredients" class="text-danger"></span>
+            </div>
                         <div class="form-group mb-4">
                             <label asp-for="Instructions" class="form-label"></label>
                             <textarea asp-for="Instructions" class="form-control" placeholder="Enter instructions"></textarea>
-                            <span asp-validation-for="Instructions" class="text-danger"></span>
-                        </div>
+                <span asp-validation-for="Instructions" class="text-danger"></span>
+            </div>
                         <div class="form-group mb-4">
                             <label asp-for="CookingTimeInMinutes" class="form-label"></label>
                             <input asp-for="CookingTimeInMinutes" class="form-control" placeholder="Enter cooking time in minutes" />
-                            <span asp-validation-for="CookingTimeInMinutes" class="text-danger"></span>
-                        </div>
+                <span asp-validation-for="CookingTimeInMinutes" class="text-danger"></span>
+            </div>
                         <div class="form-group mb-4">
                             <div class="row">
                                 <div class="col-md-3">
@@ -59,22 +59,30 @@
                                     <label asp-for="NutritionInfo.Carbohydrates" class="form-label"></label>
                                     <input asp-for="NutritionInfo.Carbohydrates" class="form-control" placeholder="Carbohydrates (g)" />
                                     <span asp-validation-for="NutritionInfo.Carbohydrates" class="text-danger"></span>
-                                </div>
+            </div>
                                 <div class="col-md-3">
                                     <label asp-for="NutritionInfo.Protein" class="form-label"></label>
                                     <input asp-for="NutritionInfo.Protein" class="form-control" placeholder="Protein (g)" />
                                     <span asp-validation-for="NutritionInfo.Protein" class="text-danger"></span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="form-group">
+            </div>
+            <div class="form-group">
+                <label asp-for="UpdatedTime" class="control-label"></label>
+                <input asp-for="UpdatedTime" class="form-control" />
+                <span asp-validation-for="UpdatedTime" class="text-danger"></span>
+            </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IsActive" /> @Html.DisplayNameFor(model => model.IsActive)
+                </label>
+            </div>
+            <div class="form-group">
                             <button type="submit" class="btn btn-primary">
                                 <i class="fas fa-save me-2"></i> Save
                             </button>
-                        </div>
-                    </form>
-                </div>
             </div>
+        </form>
+    </div>
+</div>
         </div>
     </div>
 </div>

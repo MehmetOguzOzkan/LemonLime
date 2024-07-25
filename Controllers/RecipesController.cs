@@ -274,6 +274,18 @@ namespace LemonLime.Controllers
             {
                 return NotFound();
             }
+            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Email", recipe.CreatedBy);
+            return View(recipe);
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description,Ingredients,Instructions,CookingTimeInMinutes,CreatedBy,Id,CreatedTime,UpdatedTime,IsActive")] Recipe recipe)
+        {
+            if (id != recipe.Id)
+            {
+                return NotFound();
+            }
 
             if (ModelState.IsValid)
             {
@@ -290,8 +302,15 @@ namespace LemonLime.Controllers
                         var nutritionInfo = _mapper.Map<NutritionInfo>(recipeRequest.NutritionInfo);
                         recipe.NutritionInfo = nutritionInfo;
                         _context.NutritionInfos.Add(nutritionInfo);
-                    }
-                }
+        }
+
+        // GET: Recipes/Delete/5
+        public async Task<IActionResult> Delete(Guid? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Details), new { id = recipe.Id });
@@ -316,5 +335,10 @@ namespace LemonLime.Controllers
 
             return RedirectToAction("Index","Home");
         }
+
+        private bool RecipeExists(Guid id)
+        {
+            return _context.Recipes.Any(e => e.Id == id);
+        }*/
     }
 }
