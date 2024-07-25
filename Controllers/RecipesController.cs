@@ -278,47 +278,6 @@ namespace LemonLime.Controllers
             return View(recipe);
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Description,Ingredients,Instructions,CookingTimeInMinutes,CreatedBy,Id,CreatedTime,UpdatedTime,IsActive")] Recipe recipe)
-        {
-            if (id != recipe.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                _mapper.Map(recipeRequest, recipe);
-
-                if (recipeRequest.NutritionInfo != null)
-                {
-                    if (recipe.NutritionInfo != null)
-                    {
-                        _mapper.Map(recipeRequest.NutritionInfo, recipe.NutritionInfo);
-                    }
-                    else
-                    {
-                        var nutritionInfo = _mapper.Map<NutritionInfo>(recipeRequest.NutritionInfo);
-                        recipe.NutritionInfo = nutritionInfo;
-                        _context.NutritionInfos.Add(nutritionInfo);
-        }
-
-        // GET: Recipes/Delete/5
-        public async Task<IActionResult> Delete(Guid? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Details), new { id = recipe.Id });
-            }
-
-            return View(recipeRequest);
-        }
-
         [HttpPost("delete/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
@@ -335,10 +294,5 @@ namespace LemonLime.Controllers
 
             return RedirectToAction("Index","Home");
         }
-
-        private bool RecipeExists(Guid id)
-        {
-            return _context.Recipes.Any(e => e.Id == id);
-        }*/
     }
 }
