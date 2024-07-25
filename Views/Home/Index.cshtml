@@ -1,7 +1,8 @@
 ﻿@{
     ViewData["Title"] = "Home Page";
 }
-@model LemonLime.DTOs.HomeViewModel
+
+@model LemonLime.DTOs.Home.HomeViewModel
 
 @functions {
     public string FormatRating(double rating)
@@ -21,7 +22,6 @@
     }
 }
 
-@model LemonLime.DTOs.Home.HomeViewModel
 
 <div class="container">
     <div class="row mb-4">
@@ -44,7 +44,7 @@
                                         {
                                             <i class="bi bi-star@(i < recipe.AverageRating ? "-fill" : "")"></i>
                                         }
-                                    <span class="rating-text">@FormatRating(recipe.AverageRating)</span>
+                                        <span class="rating-text">@FormatRating(recipe.AverageRating)</span>
                                     </div>
                                     <p class="card-text text-center">(@recipe.CommentCount Comments)</p>
                                 </div>
@@ -102,7 +102,7 @@
                                         {
                                             <i class="bi bi-star@(i < recipe.AverageRating ? "-fill" : "")"></i>
                                         }
-                                    <span class="rating-text">@FormatRating(recipe.AverageRating)</span>
+                                        <span class="rating-text">@FormatRating(recipe.AverageRating)</span>
                                     </div>
                                     <p class="card-text text-center">(@recipe.CommentCount Comments)</p>
                                 </div>

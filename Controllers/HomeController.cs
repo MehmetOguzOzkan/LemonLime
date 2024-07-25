@@ -30,7 +30,7 @@ namespace LemonLime.Controllers
         {
             // 1. Most liked recipes (only active ones)
             var mostLikedRecipes = await _context.Recipes
-                .Where(r => r.IsActive) // Filter to include only active recipes
+                .Where(r => r.IsActive)
                 .Include(r => r.Images)
                 .Include(r => r.Comments)
                 .Include(r => r.Ratings)
@@ -52,7 +52,7 @@ namespace LemonLime.Controllers
 
             // 3. Recently published recipes (paginated) (only active ones)
             var recentRecipes = await _context.Recipes
-                .Where(r => r.IsActive) // Filter to include only active recipes
+                .Where(r => r.IsActive)
                 .Include(r => r.Images)
                 .Include(r => r.Comments)
                 .Include(r => r.Ratings)
@@ -69,7 +69,7 @@ namespace LemonLime.Controllers
                 {
                     Tag = t,
                     RecipeCount = t.RecipeTags
-                        .Where(rt => rt.Recipe.IsActive) // Filter to include only active recipes
+                        .Where(rt => rt.Recipe.IsActive)
                         .Count()
                 })
                 .OrderBy(t => t.Tag.Name)
