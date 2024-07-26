@@ -13,5 +13,6 @@ namespace LemonLime.DTOs.Recipe
         public double AverageRating { get; set; }
 
         public int CommentCount { get; set; }
+        public bool IsActive { get; set; }
     }
 }

@@ -5,12 +5,14 @@ using LemonLime.DTOs.Recipe;
 using LemonLime.DTOs.Tag;
 using LemonLime.DTOs.User;
 using LemonLime.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Diagnostics;
 
 namespace LemonLime.Controllers
 {
+    [AllowAnonymous]
     [Route("[controller]")]
     public class HomeController : Controller
     {
@@ -34,7 +36,7 @@ namespace LemonLime.Controllers
                 .Include(r => r.Images)
                 .Include(r => r.Comments)
                 .Include(r => r.Ratings)
-                .OrderByDescending(r => r.Ratings.Average(rat => rat.Value) * r.Ratings.Count)
+                .OrderByDescending(r => r.Ratings.Average(rat => rat.Value))
                 .Take(4)
                 .ToListAsync();
 
@@ -44,7 +46,7 @@ namespace LemonLime.Controllers
             var mostLikedUsers = await _context.Users
                 .Include(u => u.Recipes.Where(r => r.IsActive))
                 .ThenInclude(r => r.Ratings)
-                .OrderByDescending(u => u.Recipes.Average(r => r.Ratings.Any() ? r.Ratings.Average(rat => rat.Value) : 0) * u.Recipes.Count)
+                .OrderByDescending(u => u.Recipes.Average(r => r.Ratings.Any() ? r.Ratings.Average(rat => rat.Value) : 0))
                 .Take(2)
                 .ToListAsync();
 

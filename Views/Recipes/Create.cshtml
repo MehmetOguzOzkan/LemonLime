@@ -2,7 +2,6 @@
 @model LemonLime.DTOs.Recipe.RecipeRequest
 
 @{
-    var tags = TempData["Tags"] != null ? JsonConvert.DeserializeObject<List<SelectListItem>>(TempData["Tags"].ToString()) : new List<SelectListItem>();
     ViewData["Title"] = "Create Recipe";
 }
 
@@ -15,7 +14,7 @@
     </h2>
     <hr />
     <div class="row justify-content-center">
-        <div class="col-md-8">
+        <div class="col-md-10">
             <div class="card border-1" style="padding: 5% 3%; border: dashed;">
                 <div class="card-body">
                     <form asp-action="Create" method="post" enctype="multipart/form-data">
@@ -48,22 +47,22 @@
                             <div class="row">
                                 <div class="col-md-3">
                                     <label asp-for="NutritionInfo.Calories" class="form-label"></label>
-                                    <input asp-for="NutritionInfo.Calories" class="form-control" placeholder="Calories" />
+                                    <input asp-for="NutritionInfo.Calories" type="number" step="1" class="form-control" placeholder="Calories" />
                                     <span asp-validation-for="NutritionInfo.Calories" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-3">
                                     <label asp-for="NutritionInfo.Fat" class="form-label"></label>
-                                    <input asp-for="NutritionInfo.Fat" class="form-control" placeholder="Fat (g)" />
+                                    <input asp-for="NutritionInfo.Fat" type="number" step="0.1" class="form-control" placeholder="Fat (g)" />
                                     <span asp-validation-for="NutritionInfo.Fat" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-3">
                                     <label asp-for="NutritionInfo.Carbohydrates" class="form-label"></label>
-                                    <input asp-for="NutritionInfo.Carbohydrates" class="form-control" placeholder="Carbohydrates (g)" />
+                                    <input asp-for="NutritionInfo.Carbohydrates" type="number" step="0.1" class="form-control" placeholder="Carbohydrates (g)" />
                                     <span asp-validation-for="NutritionInfo.Carbohydrates" class="text-danger"></span>
                                 </div>
                                 <div class="col-md-3">
                                     <label asp-for="NutritionInfo.Protein" class="form-label"></label>
-                                    <input asp-for="NutritionInfo.Protein" class="form-control" placeholder="Protein (g)" />
+                                    <input asp-for="NutritionInfo.Protein" type="number" step="0.1" class="form-control" placeholder="Protein (g)" />
                                     <span asp-validation-for="NutritionInfo.Protein" class="text-danger"></span>
                                 </div>
                             </div>
@@ -74,18 +73,11 @@
                             <span asp-validation-for="Images" class="text-danger"></span>
                         </div>
                         <div class="form-group mb-4">
-                            <label class="form-label">Tags</label>
-                            <div class="input-group mb-3">
-                                <input type="text" class="form-control" id="tagInput" placeholder="Select tags" readonly />
-                                <button class="btn btn-secondary" type="button" onclick="toggleTagList()">Choose Tags</button>
+                            <div class="form-group">
+                                <label class="control-label">Tags</label>
+                                <select asp-for="TagIds" class="form-control" asp-items="@ViewBag.Tags" multiple="multiple" size="15"></select>
                             </div>
-                            <div id="selectedTags" class="mb-3"></div>
-                            <div id="tagList" class="list-group" style="display: none;">
-                                @foreach (var tag in tags)
-                                {
-                                    <a href="#" class="list-group-item list-group-item-action" data-tag-id="@tag.Value">@tag.Text</a>
-                                }
-                            </div>
+                            <span asp-validation-for="TagIds" class="text-danger"></span>
                         </div>
                         <input type="hidden" name="TagIds" id="tagIds" />
                         <div class="form-group">

@@ -138,20 +138,20 @@
 
         <div class="col-md-4">
             <a asp-action="GetRecipesByUserId" asp-controller="Recipes" asp-route-userId="@Model.CreatedByUser.Id" class="card flex-fill text-decoration-none" style="color:black">
-            <div class="card mb-4">
-                <div class="card-body text-center">
-                    <img src="@Model.CreatedByUser.ProfilePicture" class="rounded-circle mb-3 user-profile-img" alt="@Model.CreatedByUser.Username">
-                    <h5 class="card-title">@Model.CreatedByUser.Username</h5>
-                    <p>
-                        @for (int i = 1; i <= 5; i++)
-                        {
-                            <i class="fas fa-star @(i <= Model.CreatedByUser.AverageRating ? "text-warning" : "text-muted")"></i>
-                        }
+                <div class="card mb-4">
+                    <div class="card-body text-center">
+                        <img src="@Model.CreatedByUser.ProfilePicture" class="rounded-circle mb-3 user-profile-img" alt="@Model.CreatedByUser.Username">
+                        <h5 class="card-title">@Model.CreatedByUser.Username</h5>
+                        <p>
+                            @for (int i = 1; i <= 5; i++)
+                            {
+                                <i class="fas fa-star @(i <= Model.CreatedByUser.AverageRating ? "text-warning" : "text-muted")"></i>
+                            }
                             (@FormatRating(Model.CreatedByUser.AverageRating))
-                    </p>
-                    <p class="card-text"><strong>@Model.CreatedByUser.RecipeCount</strong> Recipes</p>
+                        </p>
+                        <p class="card-text"><strong>@Model.CreatedByUser.RecipeCount</strong> Recipes</p>
+                    </div>
                 </div>
-            </div>
             </a>
 
             <!-- Nutrition Info Card -->
@@ -172,8 +172,12 @@
                     <a asp-action="Edit" asp-controller="Recipes" asp-route-id="@Model.Id" class="btn btn-warning me-2">
                         <i class="fas fa-edit"></i> Edit
                     </a>
-                    <button class="btn btn-danger" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-trash"></i> Delete</button>
-        </div>
+                    <button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-trash"></i> Delete</button>
+                    @if (isAdmin)
+                    {
+                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#activateRecipeModal"><i class="fas fa-toggle-on"></i> Activate</button>
+                    }
+                </div>
             }
         </div>
     </div>
@@ -232,6 +236,26 @@
                 <form method="post" asp-action="Delete" asp-controller="Recipes" asp-route-id="@Model.Id">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
                     <button type="submit" class="btn btn-danger">Delete</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal fade" id="activateRecipeModal" tabindex="-1" aria-labelledby="activateRecipeModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="deleteRecipeModalLabel">Activate Recipe</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                Are you sure you want to activate <strong class="badge badge-success fs-6">@Model.Title</strong> ?
+            </div>
+            <div class="modal-footer">
+                <form method="post" asp-action="Activate" asp-controller="Recipes" asp-route-id="@Model.Id">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-success">Activate</button>
                 </form>
             </div>
         </div>

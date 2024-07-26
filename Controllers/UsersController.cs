@@ -9,6 +9,7 @@ using LemonLime.Context;
 using LemonLime.Models;
 using AutoMapper;
 using LemonLime.DTOs.User;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LemonLime.Controllers
 {
@@ -24,6 +25,7 @@ namespace LemonLime.Controllers
             _mapper = mapper;
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet]
         public async Task<IActionResult> Index()
         {
@@ -36,6 +38,7 @@ namespace LemonLime.Controllers
             return View(userResponses);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
@@ -50,22 +53,24 @@ namespace LemonLime.Controllers
             return View(userDetailsResponse);
         }
 
+        [Authorize]
         [HttpGet("profile/{id:guid}")]
         public async Task<IActionResult> GetUserById(Guid id)
         {
             var user = await _context.Users
-                .Include(u => u.Recipes)
+                .Include(u => u.Recipes.Where(r=>r.IsActive))
                 .FirstOrDefaultAsync(u => u.Id == id && u.IsActive);
 
             if (user == null)
                 return NotFound();
 
             var userProfileResponse = _mapper.Map<UserProfileResponse>(user);
-            userProfileResponse.RecipeCount = user.Recipes.Count;
+            userProfileResponse.RecipeCount = user.Recipes.Where(r=>r.IsActive).Count();
 
             return View("Profile",userProfileResponse);
         }
 
+        [Authorize]
         [HttpGet("edit/{id:guid}")]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -77,6 +82,7 @@ namespace LemonLime.Controllers
             return View(userRequest);
         }
 
+        [Authorize]
         [HttpPost("edit/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, UserRequest userRequest)
@@ -100,6 +106,7 @@ namespace LemonLime.Controllers
             return RedirectToAction("Index", "Home");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("delete/{id:guid}")]
         public async Task<IActionResult> Delete(Guid id)
         {
@@ -120,6 +127,7 @@ namespace LemonLime.Controllers
             return View(_mapper.Map<UserDetailsResponse>(user));
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost("delete/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)

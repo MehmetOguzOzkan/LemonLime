@@ -9,9 +9,11 @@ using LemonLime.Context;
 using LemonLime.Models;
 using AutoMapper;
 using LemonLime.DTOs.Role;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LemonLime.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("[controller]")]
     public class RolesController : Controller
     {

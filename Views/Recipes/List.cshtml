@@ -36,9 +36,10 @@
                 {
                     @foreach (var recipe in Model)
                     {
+                        var borderColor = recipe.IsActive ? "border-success" : "border-danger";
                         <div class="col-md-3 mb-3 d-flex">
                             <a asp-action="Details" asp-controller="Recipes" asp-route-id="@recipe.Id" class="card flex-fill text-decoration-none">
-                                <div class="card">
+                                <div class="card border-4 @borderColor">
                                     <img src="~/@recipe.ImageUrl" class="card-img-top img-fluid" alt="@recipe.Title" style="height: 15rem; object-fit: cover;">
                                     <div class="card-body">
                                         <h5 class="card-title text-center">@recipe.Title</h5>

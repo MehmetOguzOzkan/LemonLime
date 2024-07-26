@@ -8,9 +8,11 @@ using LemonLime.Context;
 using LemonLime.Models;
 using AutoMapper;
 using LemonLime.DTOs.Tag;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LemonLime.Controllers
 {
+    [Authorize(Roles = "Admin")]
     [Route("[controller]")]
     public class TagsController : Controller
     {
@@ -26,7 +28,9 @@ namespace LemonLime.Controllers
         [HttpGet("")]
         public async Task<IActionResult> Index()
         {
-            var tags = await _context.Tags.Where(t => t.IsActive).ToListAsync();
+            var tags = await _context.Tags.Where(t => t.IsActive)
+                .OrderBy(t => t.Name)
+                .ToListAsync();
             var tagResponses = _mapper.Map<List<TagResponse>>(tags);
 
             return View(tagResponses);

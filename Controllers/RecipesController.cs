@@ -13,6 +13,7 @@ using LemonLime.DTOs.Tag;
 using LemonLime.DTOs;
 using LemonLime.DTOs.User;
 using Newtonsoft.Json;
+using Microsoft.AspNetCore.Authorization;
 
 namespace LemonLime.Controllers
 {
@@ -31,7 +32,7 @@ namespace LemonLime.Controllers
         [HttpGet]
         public async Task<IActionResult> Index(int? page)
         {
-            int pageSize = 10;
+            int pageSize = 12;
             var recipes = _context.Recipes.Where(r => r.IsActive)
                 .Include(r => r.Images)
                 .Include(r => r.Ratings)
@@ -43,11 +44,12 @@ namespace LemonLime.Controllers
             return View(recipeDtos);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpGet("list")]
         public async Task<IActionResult> List(int? page)
         {
-            int pageSize = 10;
-            var recipes = _context.Recipes.Where(r => r.IsActive)
+            int pageSize = 12;
+            var recipes = _context.Recipes
                 .Include(r => r.Images)
                 .Include(r => r.Ratings)
                 .Include(r => r.Comments)
@@ -61,16 +63,16 @@ namespace LemonLime.Controllers
         [HttpGet("{id:guid}")]
         public async Task<IActionResult> Details(Guid id)
         {
-            var recipe = await _context.Recipes.Where(r => r.IsActive)
+            var recipe = await _context.Recipes
                 .Include(r => r.CreatedByUser)
                 .Include(r => r.NutritionInfo)
                 .Include(r => r.Images)
                 .Include(r => r.RecipeTags)
                     .ThenInclude(rt => rt.Tag)
-                .Include(r => r.Comments)
+                .Include(r => r.Comments.OrderByDescending(c => c.CreatedTime))
                     .ThenInclude(c => c.User)
                 .Include(r => r.Ratings)
-                .FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
+                .FirstOrDefaultAsync(r => r.Id == id);
 
             var user = await _context.Users
                 .Where(u => u.Id == recipe.CreatedByUser.Id)
@@ -145,6 +147,7 @@ namespace LemonLime.Controllers
             return View("TagRecipes", response);
         }
 
+        [Authorize]
         [HttpGet("create")]
         public IActionResult Create()
         {
@@ -153,14 +156,16 @@ namespace LemonLime.Controllers
                 {
                     Value = t.Id.ToString(),
                     Text = t.Name
-                }).ToList();
+                })
+                .OrderBy(t => t.Text)
+                .ToList();
 
-            TempData["Tags"] = JsonConvert.SerializeObject(tags);
-            TempData.Keep("Tags");
+            ViewBag.Tags = tags;
 
             return View();
         }
 
+        [Authorize]
         [HttpPost("create")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([FromForm] RecipeRequest recipeRequest)
@@ -230,7 +235,9 @@ namespace LemonLime.Controllers
             return RedirectToAction(nameof(Details), new { id = recipe.Id });
         }
 
+
         // GET: Recipes/Edit/{id}
+        [Authorize]
         [HttpGet("edit/{id:guid}")]
         public async Task<IActionResult> Edit(Guid id)
         {
@@ -239,8 +246,6 @@ namespace LemonLime.Controllers
                 .Include(r => r.RecipeTags)
                     .ThenInclude(rt => rt.Tag)
                 .FirstOrDefaultAsync(r => r.Id == id && r.IsActive);
-
-            var tags = await _context.Tags.Where(t => t.IsActive).ToListAsync();
 
             if (recipe == null)
             {
@@ -255,6 +260,7 @@ namespace LemonLime.Controllers
 
 
         // POST: Recipes/Edit/{id}
+        [Authorize]
         [HttpPost("edit/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(Guid id, [FromForm] RecipeEditRequest recipeRequest)
@@ -274,10 +280,17 @@ namespace LemonLime.Controllers
             {
                 return NotFound();
             }
-            ViewData["CreatedBy"] = new SelectList(_context.Users, "Id", "Email", recipe.CreatedBy);
-            return View(recipe);
+
+            _mapper.Map(recipeRequest, recipe);
+            recipe.UpdatedTime = DateTime.UtcNow;
+
+            _context.Recipes.Update(recipe);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction(nameof(Details), new { id = recipe.Id });
         }
 
+        [Authorize]
         [HttpPost("delete/{id:guid}")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(Guid id)
@@ -293,6 +306,24 @@ namespace LemonLime.Controllers
             await _context.SaveChangesAsync();
 
             return RedirectToAction("Index","Home");
+        }
+
+        [Authorize(Roles = "Admin")]
+        [HttpPost("activate/{id:guid}")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Activate(Guid id)
+        {
+            var recipe = await _context.Recipes.FindAsync(id);
+            if (recipe == null)
+            {
+                return NotFound();
+            }
+
+            recipe.IsActive = true;
+            _context.Recipes.Update(recipe);
+            await _context.SaveChangesAsync();
+
+            return RedirectToAction("Index", "Home");
         }
     }
 }

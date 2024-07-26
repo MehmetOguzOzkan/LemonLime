@@ -4,6 +4,7 @@ using LemonLime.Models;
 using Microsoft.EntityFrameworkCore;
 using LemonLime.Context;
 using LemonLime.DTOs.Comment;
+using Microsoft.AspNetCore.Authorization;
 
 [Route("[controller]")]
 public class CommentsController : Controller
@@ -17,12 +18,14 @@ public class CommentsController : Controller
         _mapper = mapper;
     }
 
+    [Authorize]
     [HttpGet("Comments/Add/{recipeId}")]
     public IActionResult AddComment(Guid recipeId)
     {
         return View();
     }
 
+    [Authorize]
     [HttpPost("Comments/Add/{recipeId}")]
     public async Task<IActionResult> AddComment(Guid recipeId, CommentRequest commentRequest)
     {
