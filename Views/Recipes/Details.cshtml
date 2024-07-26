@@ -73,7 +73,7 @@
             <p>
                 @for (int i = 1; i <= 5; i++)
                 {
-                    <i class="fas fa-star @(i <= Model.AverageRating ? "text-warning" : "text-muted")"></i>
+                    <i class="fas fa-star @(i <= Math.Round(Model.AverageRating+0.01) ? "text-warning" : "text-muted")"></i>
                 }
                 (@FormatRating(Model.AverageRating))
                 <span class="ms-3 ml-3 text-muted">Published on @Model.CreatedTime.ToString("dd/MM/yyyy")</span>
@@ -119,15 +119,24 @@
             <hr />
             @foreach (var comment in Model.Comments)
             {
+                var ratingByUser = Model.Ratings.FirstOrDefault(r => r.User.Id == comment.User.Id).Value;
                 <div class="card mb-3">
                     <div class="card-body">
                         <div class="d-flex align-items-start">
                             <img src="@comment.User.ProfilePicture" alt="@comment.User.Username's profile picture" class="rounded-circle border" width="50" height="50" style="border-width: 2px;">
                             <div class="ms-3 flex-grow-1">
-                                <h5 class="mb-2">@comment.User.Username</h5>
+                                <h5 class="mb-2">
+                                    @comment.User.Username
+                                    &nbsp;
+                                    @for (int i = 1; i <= 5; i++)
+                                    {
+                                        <i class="fas fa-star @(i <= ratingByUser ? "text-warning" : "text-muted") fs-6"></i>
+                                    }
+                                </h5>
                                 <p class="mb-1">@comment.Content</p>
+
                             </div>
-                            <div class="ms-auto text-muted">
+                            <div class="ms-auto text-muted" style="white-space:nowrap; text-align:right;">
                                 @comment.UpdatedTime.ToString("g")
                             </div>
                         </div>
@@ -145,7 +154,7 @@
                         <p>
                             @for (int i = 1; i <= 5; i++)
                             {
-                                <i class="fas fa-star @(i <= Model.CreatedByUser.AverageRating ? "text-warning" : "text-muted")"></i>
+                                <i class="fas fa-star @(i <= Math.Round(Model.CreatedByUser.AverageRating+0.01) ? "text-warning" : "text-muted")"></i>
                             }
                             (@FormatRating(Model.CreatedByUser.AverageRating))
                         </p>
@@ -172,10 +181,14 @@
                     <a asp-action="Edit" asp-controller="Recipes" asp-route-id="@Model.Id" class="btn btn-warning me-2">
                         <i class="fas fa-edit"></i> Edit
                     </a>
-                    <button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-trash"></i> Delete</button>
                     @if (isAdmin)
                     {
+                        <button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-toggle-off"></i> Inactivate</button>
                         <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#activateRecipeModal"><i class="fas fa-toggle-on"></i> Activate</button>
+                    }
+                    else
+                    {
+                        <button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-trash"></i> Delete</button>
                     }
                 </div>
             }
@@ -230,12 +243,12 @@
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                Are you sure you want to delete <strong class="badge badge-danger fs-6">@Model.Title</strong> ?
+                Are you sure you want to @(isAdmin ? "inactivate" : "delete") <strong class="badge badge-danger fs-6">@Model.Title</strong> ?
             </div>
             <div class="modal-footer">
                 <form method="post" asp-action="Delete" asp-controller="Recipes" asp-route-id="@Model.Id">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-                    <button type="submit" class="btn btn-danger">Delete</button>
+                    <button type="submit" class="btn btn-danger">@(isAdmin ? "Inactivate" : "Delete")</button>
                 </form>
             </div>
         </div>

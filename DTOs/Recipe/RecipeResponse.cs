@@ -2,6 +2,7 @@
 using LemonLime.DTOs.Comment;
 using LemonLime.DTOs.Image;
 using LemonLime.DTOs.NutritionInfo;
+using LemonLime.DTOs.Rating;
 using LemonLime.DTOs.Tag;
 using LemonLime.DTOs.User;
 
@@ -20,5 +21,6 @@ namespace LemonLime.DTOs.Recipe
         public List<ImageResponse> Images { get; set; }
         public List<TagResponse> Tags { get; set; }
         public List<CommentResponse> Comments { get; set; }
+        public List<RatingResponse> Ratings { get; set; }
     }
 }

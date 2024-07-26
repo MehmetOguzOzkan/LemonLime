@@ -55,6 +55,8 @@ namespace LemonLime.Mapping
             CreateMap<NutritionInfo, NutritionInfoRequest>().ReverseMap();
             CreateMap<Comment, CommentResponse>()
                 .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
+            CreateMap<Rating, RatingResponse>()
+                .ForMember(dest => dest.User, opt => opt.MapFrom(src => src.User));
 
             CreateMap<Recipe, RecipeResponse>()
                 .ForMember(dest => dest.CreatedByUser, opt => opt.MapFrom(src => src.CreatedByUser))
@@ -62,6 +64,7 @@ namespace LemonLime.Mapping
                 .ForMember(dest => dest.Images, opt => opt.MapFrom(src => src.Images))
                 .ForMember(dest => dest.Tags, opt => opt.MapFrom(src => src.RecipeTags.Select(rt => rt.Tag)))
                 .ForMember(dest => dest.Comments, opt => opt.MapFrom(src => src.Comments))
+                .ForMember(dest => dest.Ratings, opt => opt.MapFrom(src => src.Ratings))
                 .ForMember(dest => dest.AverageRating, opt => opt.MapFrom(src => src.Ratings.Any() ? src.Ratings.Average(r => r.Value) : 0));
 
             CreateMap<RecipeRequest, Recipe>()

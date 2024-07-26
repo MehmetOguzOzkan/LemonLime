@@ -74,21 +74,20 @@ namespace LemonLime.Controllers
                 .Include(r => r.Ratings)
                 .FirstOrDefaultAsync(r => r.Id == id);
 
-            var user = await _context.Users
-                .Where(u => u.Id == recipe.CreatedByUser.Id)
-                .Include(u => u.Recipes.Where(r => r.IsActive))
-                .ThenInclude(r => r.Ratings)
-                .OrderByDescending(u => u.Recipes.Average(r => r.Ratings.Any() ? r.Ratings.Average(rat => rat.Value) : 0) * u.Recipes.Count)
-                .Take(1)
-                .ToListAsync();
-
-            var userResponses = user.Select(u => _mapper.Map<UserHomeResponse>(u)).ToList();
-
-
             if (recipe == null)
             {
                 return NotFound();
             }
+
+            var user = await _context.Users
+                .Where(u => u.Id == recipe.CreatedByUser.Id)
+                .Include(u => u.Recipes.Where(r => r.IsActive))
+                .ThenInclude(r => r.Ratings)
+                .OrderByDescending(u => u.Recipes.Average(r => r.Ratings.Any() ? r.Ratings.Average(rat => rat.Value) : 0))
+                .Take(1)
+                .ToListAsync();
+
+            var userResponses = user.Select(u => _mapper.Map<UserHomeResponse>(u)).ToList();
 
             var recipeResponse = _mapper.Map<RecipeResponse>(recipe);
             recipeResponse.CreatedByUser = userResponses.FirstOrDefault();

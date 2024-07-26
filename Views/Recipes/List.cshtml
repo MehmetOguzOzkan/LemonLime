@@ -44,9 +44,9 @@
                                     <div class="card-body">
                                         <h5 class="card-title text-center">@recipe.Title</h5>
                                         <div class="rating text-center">
-                                            @for (int i = 0; i < 5; i++)
+                                            @for (int i = 1; i <= 5; i++)
                                             {
-                                                <i class="bi bi-star@(i < recipe.AverageRating ? "-fill" : "")"></i>
+                                                <i class="bi bi-star@(i <= Math.Round(recipe.AverageRating + 0.01) ? "-fill" : "")"></i>
                                             }
                                             <span class="rating-text">@FormatRating(recipe.AverageRating)</span>
                                         </div>
