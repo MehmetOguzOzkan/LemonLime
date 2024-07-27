@@ -2,8 +2,17 @@
 
 @{
     ViewData["Title"] = "Details";
-    var isCurrentUserOwner = User.Identity.IsAuthenticated && Model.CreatedByUser.Username == User.Identity.Name;
-    var isAdmin = User.IsInRole("Admin");
+    var isCurrentUserOwner = false;
+    var isAdmin = false;
+    var isCommented = false;
+    if (User.Identity.IsAuthenticated)
+    {
+        var userId = new Guid(User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value);
+        isCurrentUserOwner = User.Identity.IsAuthenticated && Model.CreatedByUser.Id == userId;
+        isAdmin = User.IsInRole("Admin");
+        isCommented = Model.Comments.Any(c => c.User.Id == userId);
+    }
+
 }
 
 @functions {
@@ -111,7 +120,7 @@
 
             <div class="d-flex justify-content-between align-items-center mt-5">
                 <h3>Comments (@Model.Comments.Count)</h3>
-                @if (User.Identity.IsAuthenticated)
+                @if (User.Identity.IsAuthenticated && !isCommented && !isCurrentUserOwner)
                 {
                     <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#addCommentModal">+ Add Comment</button>
                 }
@@ -146,8 +155,8 @@
         </div>
 
         <div class="col-md-4">
-            <a asp-action="GetRecipesByUserId" asp-controller="Recipes" asp-route-userId="@Model.CreatedByUser.Id" class="card flex-fill text-decoration-none" style="color:black">
-                <div class="card mb-4">
+            <a asp-action="GetRecipesByUserId" asp-controller="Recipes" asp-route-userId="@Model.CreatedByUser.Id" class="card flex-fill text-decoration-none mb-4" style="color:black">
+                <div class="card">
                     <div class="card-body text-center">
                         <img src="@Model.CreatedByUser.ProfilePicture" class="rounded-circle mb-3 user-profile-img" alt="@Model.CreatedByUser.Username">
                         <h5 class="card-title">@Model.CreatedByUser.Username</h5>
@@ -183,8 +192,14 @@
                     </a>
                     @if (isAdmin)
                     {
-                        <button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-toggle-off"></i> Inactivate</button>
-                        <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#activateRecipeModal"><i class="fas fa-toggle-on"></i> Activate</button>
+                        @if (Model.IsActive)
+                        {
+                            <button class="btn btn-danger me-2" data-bs-toggle="modal" data-bs-target="#deleteRecipeModal"><i class="fas fa-toggle-off"></i> Inactivate</button>
+                        }
+                        else
+                        {
+                            <button class="btn btn-success" data-bs-toggle="modal" data-bs-target="#activateRecipeModal"><i class="fas fa-toggle-on"></i> Activate</button>
+                        }
                     }
                     else
                     {

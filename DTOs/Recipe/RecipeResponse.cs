@@ -22,5 +22,6 @@ namespace LemonLime.DTOs.Recipe
         public List<TagResponse> Tags { get; set; }
         public List<CommentResponse> Comments { get; set; }
         public List<RatingResponse> Ratings { get; set; }
+        public bool IsActive { get; set; }
     }
 }
